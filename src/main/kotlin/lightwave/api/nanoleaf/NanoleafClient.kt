@@ -8,12 +8,15 @@ import okhttp3.RequestBody.Companion.toRequestBody
 import okhttp3.Response
 import java.net.DatagramSocket
 import java.net.InetAddress
+import java.time.temporal.ValueRange
 
 
 class NanoleafClient(private val host: String, private val apiKey: String) {
   private val client = OkHttpClient()
   private val json = "application/json; charset=utf-8".toMediaType();
   private val gson = GsonBuilder().create()
+
+  private var currentInfo = info()
 
   private fun req(path: String) =
     Request.Builder()
@@ -47,21 +50,41 @@ class NanoleafClient(private val host: String, private val apiKey: String) {
   fun power(on: Boolean) {
     put("state", gson.toJson(Power(on))).use { r ->
       println(r.message)
-      println(r.body?.string())
     }
   }
 
-  fun info() {
-    val r = get("")
-    println(r.message)
-    r.body?.charStream().use {
-      val status = gson.fromJson(it, PanelStatus::class.java)
-      println(status)
-      println(status.panelLayout.panelIdsByY.reversed())
+  fun brightness(value: Int) {
+    put("state", gson.toJson(Brightness(value))).use { r ->
+      println(r.message)
     }
   }
 
-  fun stream() {
-//    DatagramSocket(123, InetAddress.getByName())
+  fun info(): PanelStatus? =
+    get("").body?.charStream().use {
+      gson.fromJson(it, PanelStatus::class.java)
+    }
+
+
+  fun stream(): NanoleafStream? {
+    val body = gson.toJson(
+      mapOf(
+        "write" to
+            mapOf(
+              "command" to "display",
+              "animType" to "extControl"
+            )
+      )
+    )
+    val res = put("effects", body)
+
+    if (res.isSuccessful) {
+      return res.body?.charStream()?.use {
+        NanoleafStream(gson.fromJson(s, NanoleafStreamConfig::class.java))
+      }
+    }
+
+    return null
   }
+
+
 }
