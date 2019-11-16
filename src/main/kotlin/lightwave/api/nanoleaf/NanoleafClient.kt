@@ -1,14 +1,15 @@
 package lightwave.api.nanoleaf
 
 import com.google.gson.GsonBuilder
+import lightwave.api.nanoleaf.models.Brightness
+import lightwave.api.nanoleaf.models.PanelStatus
+import lightwave.api.nanoleaf.models.Power
+import lightwave.api.nanoleaf.models.Select
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
 import okhttp3.Response
-import java.net.DatagramSocket
-import java.net.InetAddress
-import java.time.temporal.ValueRange
 
 
 class NanoleafClient(private val host: String, private val apiKey: String) {
@@ -48,14 +49,20 @@ class NanoleafClient(private val host: String, private val apiKey: String) {
   }
 
   fun power(on: Boolean) {
-    put("state", gson.toJson(Power(on))).use { r ->
-      println(r.message)
+    put("state", gson.toJson(Power(on))).use {
+      if (!it.isSuccessful) { println(it.message) }
     }
   }
 
   fun brightness(value: Int) {
-    put("state", gson.toJson(Brightness(value))).use { r ->
-      println(r.message)
+    put("state", gson.toJson(Brightness(value))).use {
+      if (!it.isSuccessful) { println(it.message) }
+    }
+  }
+
+  fun effect(value: String) {
+    put("effects", gson.toJson(Select(value))).use {
+      if (!it.isSuccessful) { println(it.message) }
     }
   }
 
@@ -63,7 +70,6 @@ class NanoleafClient(private val host: String, private val apiKey: String) {
     get("").body?.charStream().use {
       gson.fromJson(it, PanelStatus::class.java)
     }
-
 
   fun stream(): NanoleafStream? {
     val body = gson.toJson(
@@ -79,7 +85,7 @@ class NanoleafClient(private val host: String, private val apiKey: String) {
 
     if (res.isSuccessful) {
       return res.body?.charStream()?.use {
-        NanoleafStream(gson.fromJson(it, NanoleafStreamConfig::class.java))
+        NanoleafStream(gson.fromJson(it, NanoleafStream.Config::class.java))
       }
     }
 

@@ -1,4 +1,4 @@
-package lightwave.api.nanoleaf
+package lightwave.api.nanoleaf.models
 
 class Panel(
   val globalOrientation: RangeValue,
@@ -25,5 +25,3 @@ class Panel(
     val shapeType: Int
   )
 }
-
-

@@ -1,23 +1,6 @@
-package lightwave.api.nanoleaf
+package lightwave.api.nanoleaf.models
 
-
-class Power(val on: BoolValue) {
-  constructor(on: Boolean) : this(BoolValue(on))
-}
-
-class Brightness(val brightness: DurationValue) {
-  constructor(newValue: Int) : this(DurationValue(newValue))
-}
-
-data class BoolValue(val value: Boolean)
-
-data class RangeValue(
-  val value: Int,
-  val max: Int,
-  val min: Int
-)
-
-data class DurationValue(val value: Int, val duration: Int = 4)
+import lightwave.api.nanoleaf.rendering.PanelConfig
 
 class PanelSet(p: List<PanelConfig>) {
   private val panels = p.map { it.id to it }.toMap()
@@ -37,17 +20,15 @@ class PanelSet(p: List<PanelConfig>) {
 
       // PanelID, Frame Count, per-frame: R,G,B,W,T
       for ((k, v) in panels) {
+//        println("${v.id}: (${v.color.r}, ${v.color.g}, ${v.color.b})")
+
         o[i++] = v.id.toByte()
         o[i++] = 1.toByte()
         o[i++] = v.color.r.toByte()
         o[i++] = v.color.g.toByte()
         o[i++] = v.color.b.toByte()
         o[i++] = 0.toByte()
-        o[i++] = 2.toByte() // 1/10 of a second
+        o[i++] = 0.toByte() // 1/10 of a second
       }
     }
 }
-
-class PanelConfig(val id: Int, val color: PanelColor)
-
-data class PanelColor(val r: Int, val g: Int, val b: Int)
