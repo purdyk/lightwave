@@ -5,7 +5,7 @@ class Power(val on: BoolValue) {
   constructor(on: Boolean) : this(BoolValue(on))
 }
 
-class Brightness(val brighness: DurationValue) {
+class Brightness(val brightness: DurationValue) {
   constructor(newValue: Int) : this(DurationValue(newValue))
 }
 
@@ -43,7 +43,7 @@ class PanelSet(p: List<PanelConfig>) {
         o[i++] = v.color.g.toByte()
         o[i++] = v.color.b.toByte()
         o[i++] = 0.toByte()
-        o[i++] = 5.toByte() // 1/10 of a second , so half second
+        o[i++] = 2.toByte() // 1/10 of a second
       }
     }
 }

@@ -79,7 +79,7 @@ class NanoleafClient(private val host: String, private val apiKey: String) {
 
     if (res.isSuccessful) {
       return res.body?.charStream()?.use {
-        NanoleafStream(gson.fromJson(s, NanoleafStreamConfig::class.java))
+        NanoleafStream(gson.fromJson(it, NanoleafStreamConfig::class.java))
       }
     }
 

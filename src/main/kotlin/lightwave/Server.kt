@@ -20,9 +20,9 @@ class Server {
 
       nClient.stream()?.let { stream ->
         val prog = ProgressPanels(stat.panelLayout, ProgressPanels.Direction.Up)
-        for (i in 0..10) {
-          stream.push(prog.generate(i / 10.0))
-          Thread.sleep(2000)
+        for (i in 0..100) {
+          stream.push(prog.generate(i / 100.0))
+          Thread.sleep(200)
         }
       }
 
