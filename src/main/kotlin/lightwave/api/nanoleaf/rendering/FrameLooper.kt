@@ -1,9 +1,10 @@
 package lightwave.api.nanoleaf.rendering
 
 import lightwave.api.nanoleaf.models.PanelSet
+import lightwave.api.nanoleaf.rendering.effects.LinearEffect
 
 class FrameLooper(
-  val gen: LinearFrameGenerator,
+  val gen: LinearEffect,
   val times: Int = 10, val steps: Int = 100, private val delay: Long = 25,
   val perFrame: (PanelSet) -> Unit
 ) {

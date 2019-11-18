@@ -2,6 +2,9 @@ package lightwave
 
 import lightwave.api.nanoleaf.NanoleafClient
 import lightwave.api.nanoleaf.rendering.*
+import lightwave.api.nanoleaf.rendering.animation.Animator.Companion.animate
+import lightwave.api.nanoleaf.rendering.colors.ColorRGB
+import lightwave.api.nanoleaf.rendering.effects.*
 
 class Server {
 
@@ -22,43 +25,63 @@ class Server {
 
       nClient.stream()?.let { stream ->
 
-        val black = PanelConfig.ColorRGB(0, 0, 0)
-        val white = PanelConfig.ColorRGB(255, 255, 255)
+        val white = ColorRGB(255, 255, 255)
 
-        PointFrameGenator(
-          stat.panelLayout, LinearFrameGenerator.Direction.Down,
-          black, white
-        ).also { g ->
-          FrameLooper(g, 2, 100, 20) {
-            stream.push(it)
-          }.loop()
-        }
+        animate(20) {
+          together {
 
+            always {
+              FillEffect(stat.panelLayout, ColorRGB(0,0,0))
+            }
 
-        ProgressFrameGenator(
-          stat.panelLayout, LinearFrameGenerator.Direction.Up,
-          black, white
-        ).also { g ->
-          FrameLooper(g, 2, 50, 20) {
-            stream.push(it)
-          }.loop()
-        }
+            inSequence {
+              through(2.0) {
+                PointEffect(
+                  stat.panelLayout, LinearEffect.Direction.Down,
+                  white
+                )
+              }
 
-        PointFrameGenator(
-          stat.panelLayout, LinearFrameGenerator.Direction.Down
-        ).also { g ->
-          FrameLooper(g, 2, 100, 20) {
-            stream.push(it)
-          }.loop()
-        }
+              through(2.0) {
+                ProgressEffect(
+                  stat.panelLayout, LinearEffect.Direction.Up,
+                  white
+                )
+              }
 
-        ProgressFrameGenator(
-          stat.panelLayout, LinearFrameGenerator.Direction.Up
-        ).also { g ->
-          FrameLooper(g, 2, 50, 20) {
-            stream.push(it)
-          }.loop()
-        }
+              through(2.0) {
+                PointEffect(
+                  stat.panelLayout, LinearEffect.Direction.Down
+                )
+              }
+
+              through(2.0) {
+                ProgressEffect(
+                  stat.panelLayout, LinearEffect.Direction.Up
+                )
+              }
+
+              together {
+                through(10.0) {
+                  BlendEffect(stat.panelLayout, LinearEffect.Direction.Up)
+                }
+                through(2.0) {
+                  PointEffect(
+                    stat.panelLayout, LinearEffect.Direction.Down,
+                    ColorRGB(0,200,128)
+                  )
+                }
+                through(2.0) {
+                  PointEffect(
+                    stat.panelLayout, LinearEffect.Direction.Up,
+                    ColorRGB(255,200,0)
+                  )
+                }
+              }
+            }
+          }
+
+        }.into(stream)
 
       }
 

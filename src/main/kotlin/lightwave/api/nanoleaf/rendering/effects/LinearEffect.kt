@@ -1,9 +1,8 @@
-package lightwave.api.nanoleaf.rendering
+package lightwave.api.nanoleaf.rendering.effects
 
 import lightwave.api.nanoleaf.models.Panel
-import lightwave.api.nanoleaf.models.PanelSet
 
-abstract class LinearFrameGenerator(private val layout: Panel, val direction: Direction) {
+abstract class LinearEffect(layout: Panel, private val direction: Direction): Effect(layout) {
 
   protected val orderIds = when (direction) {
     Direction.Up -> layout.panelIdsByY
@@ -15,6 +14,4 @@ abstract class LinearFrameGenerator(private val layout: Panel, val direction: Di
   enum class Direction {
     Up, Down, Left, Right
   }
-
-  abstract fun frame(progress: Double): PanelSet
 }
